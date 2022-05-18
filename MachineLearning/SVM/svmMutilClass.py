@@ -7,6 +7,7 @@ from sklearn.svm import SVC
 #导入数据
 path = "data/cupcake and muffin and Cavine.xlsx"
 data = pd.read_excel(path)
+# print(data)
 # print(data.shape)#(24, 3)
 print(data['CakeType'].value_counts())
 
@@ -16,13 +17,13 @@ print(data['CakeType'].value_counts())
 
 #数据预处理
 #将CakeType的值映射到0、1、2，方便后续模型运算
-label = data.CakeType.map({'muffin':0,'cupcake':1,'Cavine':2})
-#print(label)
+label = data.CakeType.map({'muffin' : 0, 'cupcake' : 1, 'Cavine' : 2})
+# print(label)
 x = data[['Sugar','Butter']]
 
 
 #实例化SVC
-svc = SVC(kernel='linear',C=0.001,decision_function_shape='ovr')
+svc = SVC(kernel='linear',C=0.1, decision_function_shape='ovr')
 '''
 参数说明：
 decision_function_shape：设置分类器决策模式，有两种模式：ovr和ovo
@@ -50,15 +51,15 @@ xx, yy = np.meshgrid(x_value, y_value)
 '''
 numpy中的meshgrid()函数根据输入的两组数生成两个二维数组，并且这两个数组shape是一模一样的。
 '''
-
+#ravel()多维数据将为一维  np.c_== np.column() 按列叠加矩阵
 Z = svc.predict(np.c_[xx.ravel(), yy.ravel()])#使用分类器对生成的坐标点进行预测类别
 Z = Z.reshape(xx.shape)#转换预测结果Z的格式，使得可以与坐标点一一对应
 
-#绘制原始数据的散点图（此时，类型数据是真实值）
+#绘制原始数据的散点图（此时，类型数据是真实值） palette设置hue指定的变量的不同级别颜色。
 ax = sns.scatterplot(data.Sugar, y=data.Butter, hue=label, palette='Set2')
-ax.legend(loc="lower right")
-#绘制基于预测值的分界面，即分类器的边界
-from matplotlib import pyplot as plt
+ax.legend(loc="lower right") #图例 说明每条曲线的文字显示
+
+#绘制基于预测值的分界面(等高线)，即分类器的边界
 plt.contourf(xx, yy, Z, alpha=0.3)
 
 plt.show()
